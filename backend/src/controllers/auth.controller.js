@@ -150,7 +150,7 @@ async function logoutController(req, res) {
   res.status(200).json({ message: "Logout successful" });
 }
 
-export const updateProfile = async (req, res) => {
+const updateProfile = async (req, res) => {
   try {
     const { profilePicture } = req.body;
     if (!profilePicture) return res.status(400).json({ message: "Profile pic is required" });
