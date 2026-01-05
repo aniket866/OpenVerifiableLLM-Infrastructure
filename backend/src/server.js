@@ -6,10 +6,14 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
+import connectDB from "./lib/db.js";
+
 const app = express();
 
 // load env
 dotenv.config();
+
+app.use(express.json());
 
 // recreate __dirname for ESM (required)
 const __filename = fileURLToPath(import.meta.url);
@@ -36,4 +40,5 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, () => {
   console.log("Server running on port: " + PORT);
+  connectDB();
 });
