@@ -46,7 +46,6 @@ async function signupController(req, res) {
       });
     }
 
-    // ✅ SAFE domain MX check
     let domain = email.split("@")[1];
 
     try {
@@ -64,29 +63,41 @@ async function signupController(req, res) {
       return res
         .status(400)
         .json({ message: "Email already in use. Please login." });
-    }
+    } 
+    else {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      username: name,
-      email,
-      password: hashedPassword,
-    });
-
-    await newUser.save();
-    generateToken(newUser._id, res);
-
-    return res.status(201).json({
-      message: "User signed up successfully",
-      user: {
-        _id: newUser._id,
-        name,
+      const newUser = new User({
+        username: name,
         email,
-        profilePicture: newUser.profilePicture,
-      },
-    });
+        password: hashedPassword,
+      });
+
+      const SavedUser = await newUser.save();
+      generateToken(newUser._id, res);
+
+        res.status(201).json({
+        message: "User signed up successfully",
+        user: {
+          _id: newUser._id,
+          name,
+          email,
+          profilePicture: newUser.profilePicture,
+        },
+      });
+      try {
+        const { sendWelcomeEmail } = await import(
+          "../emails/emailHandler.js"
+        );
+        const clientURL = process.env.CLIENT_URL || "http://localhost:3000";
+        await sendWelcomeEmail(email, name, clientURL);
+      }
+        catch (emailError) {    
+        console.error("Error sending welcome email:", emailError);
+      }
+      
+    }
   } catch (error) {
     console.error("Signup error:", error);
 
