@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/aniket866/Chatting-app#readme",
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.1.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
