@@ -1,12 +1,16 @@
 import express from 'express';
-import { loginController, signupController,logoutController } from '../controllers/auth.controller.js';
-import { protect } from '../middleware/auth.middleware.js';
+import { loginController, signupController,logoutController,updateProfile } from '../controllers/auth.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
+import { arcjetProtection } from '../middlewares/arject.middleware.js';
 
 const router = express.Router();
 
+router.get('/test', arcjetProtection, (req, res) => {
+  res.status(200).json({ message: 'Arcjet protection passed!' });
+});
 router.post('/signup',signupController);
 
-router.post('/login', loginController);
+router.post('/login',arcjetProtection, loginController);
 
 router.post('/logout', protect,logoutController);
 
