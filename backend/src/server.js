@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -14,6 +15,7 @@ const app = express();
 dotenv.config();
 
 app.use(express.json());
+app.use(cookieParser());
 
 // recreate __dirname for ESM (required)
 const __filename = fileURLToPath(import.meta.url);
