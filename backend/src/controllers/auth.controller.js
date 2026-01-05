@@ -107,5 +107,46 @@ async function signupController(req, res) {
     });
   }
 }
+async function loginController(req, res) {
+  try {
+    const { email, password } = req.body;
 
-export { signupController };
+    
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    generateToken(user._id, res);
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.username,
+        email: user.email,
+        profilePicture: user.profilePicture,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Error in login controller" });
+  }
+}
+async function logoutController(req, res) {
+    res.clearCookie("jwt", {
+    httpOnly: true,
+    maxAge: 0,
+  });
+  res.status(200).json({ message: "Logout successful" });
+}
+export {signupController, loginController, logoutController};
