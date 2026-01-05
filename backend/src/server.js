@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 // port from .env
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+app.set("trust proxy", 1); 
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
