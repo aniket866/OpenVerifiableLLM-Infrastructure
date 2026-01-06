@@ -20,24 +20,6 @@ const messageSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    read: { 
-        type: Boolean,
-        default: false
-    },
-    video: {
-      type: String,
-    },
-    audio: {
-        type: String,
-    },
-    pdf: {
-        type: String,
-    },  
-    otherFiles: {   
-        type: [String],
-    }
-
-
   },
   { timestamps: true }
 );
