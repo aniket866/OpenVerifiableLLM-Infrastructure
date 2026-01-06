@@ -4,28 +4,17 @@ import { generateToken } from "../lib/utils.js";
 import dns from "dns/promises";
 
 async function signupController(req, res) {
-  const { name, email, password } = req.body;
+  const { fullName, email, password } = req.body;
 
   try {
-    if (!name || !email || !password) {
+    if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters" });
     }
 
     if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    if (name.length < 3) {
-      return res
-        .status(400)
-        .json({ message: "Name must be at least 3 characters" });
-    }
 
     if (password.length > 50) {
       return res
@@ -33,17 +22,10 @@ async function signupController(req, res) {
         .json({ message: "Password must be less than 50 characters" });
     }
 
-    if (name.length > 30) {
+    if (fullName.length > 30) {
       return res
         .status(400)
-        .json({ message: "Name must be less than 30 characters" });
-    }
-
-    if (!/(?=.*[0-9])(?=.*[!@#$%^&*])/.test(password)) {
-      return res.status(400).json({
-        message:
-          "Password must contain at least one number and one special character",
-      });
+        .json({ message: "fullName must be less than 30 characters" });
     }
 
     let domain = email.split("@")[1];
@@ -69,7 +51,7 @@ async function signupController(req, res) {
       const hashedPassword = await bcrypt.hash(password, salt);
 
       const newUser = new User({
-        username: name,
+        fullName: fullName,
         email,
         password: hashedPassword,
       });
@@ -81,9 +63,9 @@ async function signupController(req, res) {
         message: "User signed up successfully",
         user: {
           _id: newUser._id,
-          name,
+          fullName,
           email,
-          profilePicture: newUser.profilePicture,
+          profilePic: newUser.profilePic,
         },
       });
       try {
@@ -91,7 +73,7 @@ async function signupController(req, res) {
           "../emails/emailHandler.js"
         );
         const clientURL = process.env.CLIENT_URL || "http://localhost:3000";
-        await sendWelcomeEmail(email, name, clientURL);
+        await sendWelcomeEmail(email, fullName, clientURL);
       }
         catch (emailError) {    
         console.error("Error sending welcome email:", emailError);
@@ -132,9 +114,9 @@ async function loginController(req, res) {
       message: "Login successful",
       user: {
         _id: user._id,
-        name: user.username,
+        fullName: user.fullName,
         email: user.email,
-        profilePicture: user.profilePicture,
+        profilePic: user.profilePic,
       },
     });
   } catch (error) {
@@ -152,8 +134,8 @@ async function logoutController(req, res) {
 
 const updateProfile = async (req, res) => {
   try {
-    const { profilePicture } = req.body;
-    if (!profilePicture) return res.status(400).json({ message: "Profile pic is required" });
+    const { profilePic } = req.body;
+    if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
 
     const userId = req.user._id;
 
@@ -161,7 +143,7 @@ const updateProfile = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePicture: uploadResponse.secure_url },
+      { profilePic: uploadResponse.secure_url },
       { new: true }
     );
 

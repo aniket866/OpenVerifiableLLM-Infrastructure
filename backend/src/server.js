@@ -7,7 +7,8 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
-import connectDB from "./lib/db.js";
+import connectDB from "./lib/db.js"
+import cors from "cors";
 
 const app = express();
 
@@ -16,6 +17,13 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 // recreate __dirname for ESM (required)
 const __filename = fileURLToPath(import.meta.url);
