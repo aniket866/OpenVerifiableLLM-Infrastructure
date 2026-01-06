@@ -16,7 +16,6 @@ export const useChatStore = create((set, get) => ({
   toggleSound: () => {
     localStorage.setItem("isSoundEnabled", !get().isSoundEnabled);
     set({ isSoundEnabled: !get().isSoundEnabled });
-  
   },
 
   setActiveTab: (tab) => set({ activeTab: tab }),
